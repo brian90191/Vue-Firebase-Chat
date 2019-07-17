@@ -1,0 +1,185 @@
+<template>
+  <v-card class="mx-auto" color="#26c6da" dark max-width="600">
+    <v-card-title>
+      <v-list-tile class="grow">
+        <v-list-tile-avatar color="grey darken-3">
+          <v-img class="elevation-6" :src="user.photoURL"></v-img>
+        </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-list-tile-title>
+            <span class="title font-weight-light">{{ user.displayName }}</span>
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-card-title>
+    <v-divider light></v-divider>
+    <v-card-text style="padding: 0">
+      <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 600px;">
+        <v-layout row wrap v-for="(msg, index) in messages" :key="index">
+          <v-flex xs1>
+          </v-flex>
+          <v-flex xs10>
+            <div class="outgoing_msg">
+              <div class="sent_msg">
+                <span>{{ msg.author.name }}</span>
+                <p v-html="msg.content"></p>
+                <span class="time_date">{{ getTime(msg.createTime) }}</span>
+              </div>
+            </div>
+          </v-flex>
+          <v-flex xs1>
+            <v-avatar size="40">
+              <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
+            </v-avatar>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card-text>
+    <v-card-actions style="padding: 0">
+      <v-flex xs12>
+        <v-form @submit.prevent="addMessage">
+          <v-text-field v-model.trim="inputMessage" box label="Write a message" hide-details append-icon="send"
+            @click:append="addMessage">
+          </v-text-field>
+        </v-form>
+      </v-flex>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script>
+import firebase from 'firebase/app'
+import { db } from '../db'
+
+const fStore = db.firestore()
+
+export default {
+  data () {
+    return {
+      user: {
+          uid: '001',
+          displayName: 'Brian',
+          photoURL: 'https://lh6.googleusercontent.com/-XA3sZvZv414/AAAAAAAAAAI/AAAAAAAAB70/bl31VaxebCc/photo.jpg',
+          email: 'test@test.com'
+      },
+      messages: [],
+      inputMessage: ""
+    }
+  },
+  mounted: function () {
+    this.$bind(
+      'messages',
+      fStore.collection('Message').orderBy('createTime')
+    )
+  },
+  updated () {
+    const objDiv = document.getElementById('chat-container')
+    objDiv.scrollTop = objDiv.scrollHeight
+  },
+  methods: {
+    getTime (firebaseTS) {
+      let dateObj = new Date(firebaseTS.seconds * 1000) // date object
+      let date = dateObj.toISOString().substring(0, 10)
+      let hours = dateObj.getHours()
+      let minutes = dateObj.getMinutes()
+      let seconds = dateObj.getSeconds()
+      let ampm = hours >= 12 ? 'PM' : 'AM'
+      hours = hours % 12
+      hours = hours > 0 ? hours : 12 // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0' + minutes : minutes
+      seconds = seconds < 10 ? '0' + seconds : seconds
+      let strTime = `${date} ${hours}:${minutes}:${seconds} ${ampm}`
+      return strTime
+    },
+    addMessage: function () {
+      if (this.inputMessage === '') return
+
+      // Add message to firestore
+      fStore.collection('Message')
+        .add({
+          'author': {
+            'uid': this.user.uid,
+            'name': this.user.displayName,
+            'photoURL': this.user.photoURL,
+            'email': this.user.email
+          },
+          'content': this.inputMessage,
+          'createTime': firebase.firestore.Timestamp.fromDate(new Date())
+        })
+        .then(() => {
+          this.inputMessage = ''
+        })
+    }
+  }
+}
+</script>
+
+<style>
+  .incoming_msg_img {
+    display: inline-block;
+    width: 6%;
+  }
+
+  .received_msg {
+    display: inline-block;
+    padding: 0 0 0 10px;
+    vertical-align: top;
+    width: 92%;
+  }
+
+  .received_withd_msg p {
+    background: #e4e8fb none repeat scroll 0 0;
+    border-radius: 3px;
+    color: #646464;
+    font-size: 14px;
+    margin: 0;
+    padding: 5px 10px 5px 12px;
+    width: 100%;
+  }
+
+  .time_date {
+    color: #484848;
+    display: block;
+    font-size: 10px;
+    margin: 3px 0 0;
+  }
+
+  .sent_msg p {
+    background: #AED581;
+    border-radius: 3px;
+    font-size: 14px;
+    margin: 0;
+    color: #fff;
+    padding: 5px 10px;
+    width: 100%;
+  }
+
+  .outgoing_msg {
+    overflow: hidden;
+    margin: 8px 0 15px;
+    word-wrap: break-word;
+    vertical-align: top;
+  }
+
+  .sent_msg {
+    float: right;
+    width: 80%;
+    text-align: right;
+  }
+
+  .msg-scroll::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+    background-color: #1E9EAE;
+  }
+
+  .msg-scroll::-webkit-scrollbar {
+    width: 6px;
+    background-color: #1E9EAE;
+  }
+
+  .msg-scroll::-webkit-scrollbar-thumb {
+    background-color: #99f4ff;
+
+  }
+
+</style>
