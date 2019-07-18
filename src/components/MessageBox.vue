@@ -17,10 +17,20 @@
       <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 600px;">
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
           <v-flex xs1>
+            <v-avatar size="40" v-if="msg.author.uid !== user.uid">
+              <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
+            </v-avatar>
           </v-flex>
           <v-flex xs10>
-            <div class="outgoing_msg">
+            <div class="outgoing_msg" v-if="msg.author.uid === user.uid">
               <div class="sent_msg">
+                <span>{{ msg.author.name }}</span>
+                <p v-html="msg.content"></p>
+                <span class="time_date">{{ getTime(msg.createTime) }}</span>
+              </div>
+            </div>
+            <div class="incoming_msg" v-else>
+              <div class="received_msg">
                 <span>{{ msg.author.name }}</span>
                 <p v-html="msg.content"></p>
                 <span class="time_date">{{ getTime(msg.createTime) }}</span>
@@ -28,7 +38,7 @@
             </div>
           </v-flex>
           <v-flex xs1>
-            <v-avatar size="40">
+            <v-avatar size="40" v-if="msg.author.uid === user.uid">
               <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
             </v-avatar>
           </v-flex>
@@ -115,41 +125,26 @@ export default {
 </script>
 
 <style>
-  .incoming_msg_img {
-    display: inline-block;
-    width: 6%;
+  .incoming_msg {
+    overflow: hidden;
+    margin: 8px 0 15px;
+    word-wrap: break-word;
+    vertical-align: top;
   }
-
+  
   .received_msg {
     display: inline-block;
     padding: 0 0 0 10px;
     vertical-align: top;
-    width: 92%;
+    width: 80%;
   }
 
-  .received_withd_msg p {
-    background: #e4e8fb none repeat scroll 0 0;
+  .received_msg p {
+    background: #e4e8fb;
     border-radius: 3px;
     color: #646464;
     font-size: 14px;
     margin: 0;
-    padding: 5px 10px 5px 12px;
-    width: 100%;
-  }
-
-  .time_date {
-    color: #484848;
-    display: block;
-    font-size: 10px;
-    margin: 3px 0 0;
-  }
-
-  .sent_msg p {
-    background: #AED581;
-    border-radius: 3px;
-    font-size: 14px;
-    margin: 0;
-    color: #fff;
     padding: 5px 10px;
     width: 100%;
   }
@@ -165,6 +160,23 @@ export default {
     float: right;
     width: 80%;
     text-align: right;
+  }
+
+  .sent_msg p {
+    background: #AED581;
+    border-radius: 3px;
+    font-size: 14px;
+    margin: 0;
+    color: #fff;
+    padding: 5px 10px;
+    width: 100%;
+  }
+
+  .time_date {
+    color: #484848;
+    display: block;
+    font-size: 10px;
+    margin: 3px 0 0;
   }
 
   .msg-scroll::-webkit-scrollbar-track {

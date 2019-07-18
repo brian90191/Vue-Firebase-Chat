@@ -1,16 +1,18 @@
 <template>
   <div id="app">
+    <Auth />
     <MessageBox />
   </div>
 </template>
 
 <script>
 import MessageBox from './components/MessageBox'
+import Auth from './components/Auth'
 
 export default {
   name: 'app',
   components: {
-    MessageBox
+    MessageBox, Auth
   }
 }
 </script>
