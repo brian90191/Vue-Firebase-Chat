@@ -1,21 +1,27 @@
 <template>
-  <v-toolbar color="teal lighten-2" dark>
-    <v-avatar size="36" v-show="isAuth && user !== {}">
-      <img :src="user.photoURL ? user.photoURL : ''" alt="avatar">
-    </v-avatar>
-
-    <v-toolbar-title v-if="isAuth && user !== {}">{{ user.displayName }}</v-toolbar-title>
-    <v-toolbar-title v-else>Let's chat in URL</v-toolbar-title>
+  <v-toolbar color="transparent">
+    
+    <v-toolbar-title >Chatbox</v-toolbar-title>
 
     <v-spacer></v-spacer>
 
-    <v-btn depressed color="red lighten-2" v-if="!isAuth" @click="login">
-      Login
-    </v-btn>
-    <v-btn flat v-else @click="logout">
-      Logout
-    </v-btn>
-
+    <v-toolbar-items class="hidden-sm-and-down">
+      <v-btn depressed color="red lighten-2" v-if="!isAuth" @click="login">
+          Login
+      </v-btn>
+      <v-btn flat v-else @click="logout">
+        <v-list-tile class="grow">
+        <v-list-tile-avatar color="grey darken-3">
+          <v-img class="elevation-6" :src="user.photoURL"></v-img>
+        </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-list-tile-title>
+            <span class="title font-weight-light">{{ user.displayName }}</span>
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      </v-btn>
+    </v-toolbar-items>
   </v-toolbar>
 </template>
 

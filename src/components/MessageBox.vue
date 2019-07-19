@@ -1,18 +1,6 @@
 <template>
   <v-card class="mx-auto" color="#26c6da" dark max-width="600">
-    <v-card-title>
-      <v-list-tile class="grow">
-        <v-list-tile-avatar color="grey darken-3">
-          <v-img class="elevation-6" :src="user.photoURL"></v-img>
-        </v-list-tile-avatar>
-        <v-list-tile-content>
-          <v-list-tile-title>
-            <span class="title font-weight-light">{{ user.displayName }}</span>
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-card-title>
-    <v-divider light></v-divider>
+    <Auth />
     <v-card-text style="padding: 0">
       <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 600px;">
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
@@ -58,12 +46,16 @@
 </template>
 
 <script>
+import Auth from './Auth'
 import firebase from 'firebase/app'
 import { db } from '../db'
 
 const fStore = db.firestore()
 
 export default {
+  components: {
+    Auth
+  },
   data () {
     return {
       user: {
