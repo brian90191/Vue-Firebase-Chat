@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" color="#26c6da" dark max-width="600">
-    <Auth />
+    <Auth @setUser="setUser" @cleanUser="cleanUser" />
     <v-card-text style="padding: 0">
       <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 600px;">
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
@@ -9,15 +9,16 @@
               <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
             </v-avatar>
           </v-flex>
-          <v-flex xs10>
-            <div class="outgoing_msg" v-if="msg.author.uid === user.uid">
+          <v-flex xs11 v-if="msg.author.uid == user.uid">
+            <div class="outgoing_msg" >
               <div class="sent_msg">
-                <span>{{ msg.author.name }}</span>
                 <p v-html="msg.content"></p>
                 <span class="time_date">{{ getTime(msg.createTime) }}</span>
               </div>
             </div>
-            <div class="incoming_msg" v-else>
+          </v-flex>
+          <v-flex xs10 v-else>
+            <div class="incoming_msg">
               <div class="received_msg">
                 <span>{{ msg.author.name }}</span>
                 <p v-html="msg.content"></p>
@@ -25,10 +26,7 @@
               </div>
             </div>
           </v-flex>
-          <v-flex xs1>
-            <v-avatar size="40" v-if="msg.author.uid === user.uid">
-              <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
-            </v-avatar>
+          <v-flex xs1 v-if="msg.author.uid !== user.uid">
           </v-flex>
         </v-layout>
       </v-container>
@@ -58,12 +56,8 @@ export default {
   },
   data () {
     return {
-      user: {
-          uid: '001',
-          displayName: 'Brian',
-          photoURL: 'https://lh6.googleusercontent.com/-XA3sZvZv414/AAAAAAAAAAI/AAAAAAAAB70/bl31VaxebCc/photo.jpg',
-          email: 'test@test.com'
-      },
+      isLogin: false,
+      user: {},
       messages: [],
       inputMessage: ""
     }
@@ -79,6 +73,19 @@ export default {
     objDiv.scrollTop = objDiv.scrollHeight
   },
   methods: {
+    setUser (user) {
+      this.user = {
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        email: user.email
+      },
+      this.isLogin = true
+    },
+    cleanUser () {
+      this.user = {}
+      this.isLogin = false
+    },
     getTime (firebaseTS) {
       let dateObj = new Date(firebaseTS.seconds * 1000) // date object
       let date = dateObj.toISOString().substring(0, 10)

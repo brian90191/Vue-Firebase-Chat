@@ -1,28 +1,28 @@
 <template>
-  <v-toolbar color="transparent">
-    
-    <v-toolbar-title >Chatbox</v-toolbar-title>
-
-    <v-spacer></v-spacer>
-
-    <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn depressed color="red lighten-2" v-if="!isAuth" @click="login">
-          Login
-      </v-btn>
-      <v-btn flat v-else @click="logout">
-        <v-list-tile class="grow">
-        <v-list-tile-avatar color="grey darken-3">
-          <v-img class="elevation-6" :src="user.photoURL"></v-img>
-        </v-list-tile-avatar>
-        <v-list-tile-content>
-          <v-list-tile-title>
-            <span class="title font-weight-light">{{ user.displayName }}</span>
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-      </v-btn>
-    </v-toolbar-items>
-  </v-toolbar>
+    <v-toolbar color="transparent">
+        <v-toolbar-title>Chatbox</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+            <v-btn depressed color="red lighten-2" v-if="!isAuth" @click="login">
+                Login
+            </v-btn>
+            <v-btn flat v-if="isAuth">
+                <v-list-tile class="grow">
+                    <v-list-tile-avatar color="grey darken-3">
+                        <v-img class="elevation-6" :src="user.photoURL"></v-img>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                        <v-list-tile-title>
+                            <span class="title font-weight-light">{{ user.displayName }}</span>
+                        </v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-btn>
+            <v-btn depressed color="red lighten-2" v-if="isAuth" @click="logout">
+                logout
+            </v-btn>
+        </v-toolbar-items>
+    </v-toolbar>
 </template>
 
 <script>
@@ -42,11 +42,11 @@ export default {
       if (user) {
         this.user = user
         this.isAuth = true
-        // this.$emit('setUser', user)
+        this.$emit('setUser', user)
       } else {
         this.user = {}
         this.isAuth = false
-        // this.$emit('cleanUser')
+        this.$emit('cleanUser')
       }
     })
   },
