@@ -63,10 +63,20 @@ export default {
     }
   },
   mounted: function () {
-    this.$bind(
-      'messages',
-      fStore.collection('Message').orderBy('createTime')
-    )
+    if (this.isLogin) {
+      this.bindMessage()
+    } else {
+      this.messages = [];
+    }
+  },
+  watch: {
+    isLogin () {
+      if (this.isLogin) {
+        this.bindMessage()
+      } else {
+        this.messages = [];
+      }
+    }
   },
   updated () {
     const objDiv = document.getElementById('chat-container')
@@ -100,8 +110,14 @@ export default {
       let strTime = `${date} ${hours}:${minutes}:${seconds} ${ampm}`
       return strTime
     },
-    addMessage: function () {
-      if (this.inputMessage === '') return
+    bindMessage () {
+      this.$bind(
+        'messages',
+        fStore.collection('Message').orderBy('createTime')
+      )
+    },
+    addMessage () {
+      if (this.inputMessage === '' || !this.isLogin) return
 
       // Add message to firestore
       fStore.collection('Message')
@@ -126,7 +142,7 @@ export default {
 <style>
   .incoming_msg {
     overflow: hidden;
-    margin: 8px 0 15px;
+    margin-bottom: 15px;
     word-wrap: break-word;
     vertical-align: top;
   }
@@ -145,12 +161,18 @@ export default {
     font-size: 14px;
     margin: 0;
     padding: 5px 10px;
-    width: 100%;
+    max-width: 100%;
+    display: inline-block;
+    text-align: justify;
+  }
+
+  .received_msg span {
+    display: block;
   }
 
   .outgoing_msg {
     overflow: hidden;
-    margin: 8px 0 15px;
+    margin-bottom: 15px;
     word-wrap: break-word;
     vertical-align: top;
   }
@@ -168,11 +190,17 @@ export default {
     margin: 0;
     color: #fff;
     padding: 5px 10px;
-    width: 100%;
+    max-width: 100%;
+    display: inline-block;
+    text-align: justify;
+  }
+
+  .sent_msg span {
+    display: block;
   }
 
   .time_date {
-    color: #484848;
+    color: #1D99A9;
     display: block;
     font-size: 10px;
     margin: 3px 0 0;
