@@ -1,5 +1,6 @@
 <template>
     <v-toolbar color="transparent">
+        <v-icon large color="darken-2">chat</v-icon>
         <v-toolbar-title>Chatbox</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
