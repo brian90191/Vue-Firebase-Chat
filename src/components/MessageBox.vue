@@ -2,10 +2,10 @@
   <v-card class="mx-auto" color="#26c6da" dark max-width="600">
     <Auth @setUser="setUser" @cleanUser="cleanUser" />
     <v-card-text style="padding: 0">
-      <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 600px;">
+      <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 500px; scroll-behavior: smooth;">
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
           <v-flex xs1>
-            <v-avatar size="40" v-if="msg.author.uid !== user.uid">
+            <v-avatar size="32" v-if="msg.author.uid !== user.uid">
               <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
             </v-avatar>
           </v-flex>
