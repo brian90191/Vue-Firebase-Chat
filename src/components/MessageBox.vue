@@ -1,8 +1,8 @@
 <template>
-  <v-card class="mx-auto" color="#26c6da" dark max-width="600">
-    <Auth @setUser="setUser" @cleanUser="cleanUser" />
-    <v-card-text style="padding: 0">
-      <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="height: 500px; scroll-behavior: smooth;">
+  <div>
+    <Auth class="box_header" @setUser="setUser" @cleanUser="cleanUser" />
+    <section class="box_main" style="padding: 0">
+      <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="scroll-behavior: smooth;">
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
           <v-flex xs1>
             <v-avatar size="32" v-if="msg.author.uid !== user.uid">
@@ -30,8 +30,8 @@
           </v-flex>
         </v-layout>
       </v-container>
-    </v-card-text>
-    <v-card-actions style="padding: 0">
+    </section>
+    <v-card-actions class="box_footer" style="padding: 0">
       <v-flex xs12>
         <v-form @submit.prevent="addMessage">
           <v-text-field v-model.trim="inputMessage" box label="Write a message" hide-details append-icon="send"
@@ -40,7 +40,7 @@
         </v-form>
       </v-flex>
     </v-card-actions>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -140,6 +140,41 @@ export default {
 </script>
 
 <style>
+  .box_header {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* height: 50px; */
+    line-height: 50px;
+    /* background-color: #26c6da; */
+    text-align: center;
+  }
+
+  .box_main {
+    z-index: 0;
+    position: absolute;
+    top: 45px;
+    bottom: 55px;
+    left: 0;
+    right: 0;
+    background-color: #26C6DA;
+    overflow: auto;
+  }
+
+  .box_footer {
+    z-index: 1;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* height: 50px; */
+    line-height: 50px;
+    /* background-color: #1E9EAE; */
+    text-align: center;
+  }
+
   .incoming_msg {
     overflow: hidden;
     margin-bottom: 15px;
