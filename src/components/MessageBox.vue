@@ -1,15 +1,10 @@
 <template>
   <div>
     <Auth class="box_header" @setUser="setUser" @cleanUser="cleanUser" />
-    <section class="box_main" style="padding: 0">
-      <v-container id="chat-container" grid-list-md text-xs-left class="scroll-y msg-scroll" style="scroll-behavior: smooth;">
+    <div id="chat-container" class="box_main scroll-y msg-scroll" dark>
+      <v-container grid-list-md text-xs-left>
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
-          <v-flex xs1>
-            <v-avatar size="32" v-if="msg.author.uid !== user.uid">
-              <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
-            </v-avatar>
-          </v-flex>
-          <v-flex xs11 v-if="msg.author.uid == user.uid">
+          <v-flex xs12 v-if="msg.author.uid == user.uid">
             <div class="outgoing_msg" >
               <div class="sent_msg">
                 <p v-html="msg.content"></p>
@@ -17,10 +12,13 @@
               </div>
             </div>
           </v-flex>
-          <v-flex xs10 v-else>
+          <v-flex xs11 v-else>
             <div class="incoming_msg">
+              <v-avatar size="40" v-if="msg.author.uid !== user.uid">
+                <img :src="msg.author.photoURL ? msg.author.photoURL : ''" alt="avatar">
+              </v-avatar>
               <div class="received_msg">
-                <span>{{ msg.author.name }}</span>
+                <span class="sender">{{ msg.author.name }}</span>
                 <p v-html="msg.content"></p>
                 <span class="time_date">{{ getTime(msg.createTime) }}</span>
               </div>
@@ -30,16 +28,16 @@
           </v-flex>
         </v-layout>
       </v-container>
-    </section>
-    <v-card-actions class="box_footer" style="padding: 0">
+    </div>
+    <div class="box_footer" dark>
       <v-flex xs12>
         <v-form @submit.prevent="addMessage">
-          <v-text-field v-model.trim="inputMessage" box label="Write a message" hide-details append-icon="send"
+          <v-text-field v-model.trim="inputMessage" dark box label="Write a message" hide-details append-icon="send"
             @click:append="addMessage">
           </v-text-field>
         </v-form>
       </v-flex>
-    </v-card-actions>
+    </div>
   </div>
 </template>
 
@@ -148,14 +146,14 @@ export default {
     right: 0;
     /* height: 50px; */
     line-height: 50px;
-    /* background-color: #26c6da; */
+    background-color: #26c6da;
     text-align: center;
   }
 
   .box_main {
     z-index: 0;
     position: absolute;
-    top: 45px;
+    top: 50px;
     bottom: 55px;
     left: 0;
     right: 0;
@@ -171,7 +169,7 @@ export default {
     right: 0;
     /* height: 50px; */
     line-height: 50px;
-    /* background-color: #1E9EAE; */
+    background-color: #1E9EAE;
     text-align: center;
   }
 
@@ -232,6 +230,11 @@ export default {
 
   .sent_msg span {
     display: block;
+  }
+
+  .sender {
+    color: #fff;
+    font-size: 13px;
   }
 
   .time_date {
