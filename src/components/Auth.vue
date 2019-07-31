@@ -27,50 +27,24 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import { db } from '../db'
-const fAuth = db.auth()
+import { mapState } from 'vuex'
 
 export default {
-  data () {
-    return {
-      user: {},
-      isAuth: false
-    }
+  computed: {
+    ...mapState([
+      'user', 'isAuth'
+    ]),
   },
   created () {
-    fAuth.onAuthStateChanged(user => {
-      if (user) {
-        this.user = user
-        this.isAuth = true
-        this.$emit('setUser', user)
-      } else {
-        this.user = {}
-        this.isAuth = false
-        this.$emit('cleanUser')
-      }
-    })
+    this.$store.dispatch('checkAuth');
   },
   methods: {
     login () {
-      const authProvider = new firebase.auth.GoogleAuthProvider()
-      fAuth.signInWithPopup(authProvider)
-        .then(result => {
-          this.user = result.user
-          this.isAuth = true
-          this.$emit('setUser', result.user)
-        })
-        .catch(err => console.error(err))
+      this.$store.dispatch('login');
     },
 
     logout () {
-      fAuth.signOut()
-        .then(() => {
-          this.user = {}
-          this.isAuth = false
-          this.$emit('cleanUser')
-        })
-        .catch(err => console.log(err))
+      this.$store.dispatch('logout');
     }
   }
 }
