@@ -1,16 +1,22 @@
 <template>
-  <div id="app">
+  <v-app id="app">
+    <Auth class="box_header" />
+    <Home />
     <MessageBox />
-  </div>
+    <LogoutDialog />
+  </v-app>
 </template>
 
 <script>
+import Home from './components/Home'
 import MessageBox from './components/MessageBox'
+import LogoutDialog from './components/LogoutDialog'
+import Auth from './components/Auth'
 
 export default {
   name: 'app',
   components: {
-    MessageBox
+    MessageBox, LogoutDialog, Auth, Home
   }
 }
 </script>
@@ -19,14 +25,11 @@ export default {
 
 * {
   font-family: "Helvetica", "Arial","LiHei Pro","黑體-繁","微軟正黑體", sans-serif;
-}
-
-body {
-  background-color: #2c3e50;
+  -webkit-overflow-scrolling: touch;
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  background: #26C6DA;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

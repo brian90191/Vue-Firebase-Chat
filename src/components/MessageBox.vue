@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <Auth class="box_header" @setUser="setUser" @cleanUser="cleanUser" />
-    <div id="chat-container" class="box_main scroll-y msg-scroll" dark>
+  <div dark v-if="isAuth && !isLoading">
+    <div id="chat-container" class="box_main scroll-y msg-scroll">
       <v-container grid-list-md text-xs-left>
         <v-layout row wrap v-for="(msg, index) in messages" :key="index">
           <v-flex xs12 v-if="msg.author.uid == user.uid">
@@ -32,7 +31,7 @@
     <div class="box_footer" dark>
       <v-flex xs12>
         <v-form @submit.prevent="addMessage">
-          <v-text-field v-model.trim="inputMessage" dark box label="Write a message" hide-details append-icon="send"
+          <v-text-field  v-model.trim="inputMessage" dark box color="white" label="Write a message" hide-details append-icon="send"
             @click:append="addMessage">
           </v-text-field>
         </v-form>
@@ -42,34 +41,34 @@
 </template>
 
 <script>
-import Auth from './Auth'
 import firebase from 'firebase/app'
 import { db } from '../db'
+import { mapState } from 'vuex'
 
 const fStore = db.firestore()
 
 export default {
-  components: {
-    Auth
-  },
   data () {
     return {
-      isLogin: false,
-      user: {},
       messages: [],
       inputMessage: ""
     }
   },
+  computed: {
+    ...mapState([
+      'user', 'isAuth', 'isLoading'
+    ]),
+  },
   mounted: function () {
-    if (this.isLogin) {
+    if (this.isAuth) {
       this.bindMessage()
     } else {
       this.messages = [];
     }
   },
   watch: {
-    isLogin () {
-      if (this.isLogin) {
+    isAuth () {
+      if (this.isAuth) {
         this.bindMessage()
       } else {
         this.messages = [];
@@ -78,22 +77,11 @@ export default {
   },
   updated () {
     const objDiv = document.getElementById('chat-container')
-    objDiv.scrollTop = objDiv.scrollHeight
+    if (objDiv) {
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }
   },
   methods: {
-    setUser (user) {
-      this.user = {
-        uid: user.uid,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        email: user.email
-      },
-      this.isLogin = true
-    },
-    cleanUser () {
-      this.user = {}
-      this.isLogin = false
-    },
     getTime (firebaseTS) {
       let dateObj = new Date(firebaseTS.seconds * 1000) // date object
       let date = dateObj.toISOString().substring(0, 10)
@@ -109,28 +97,41 @@ export default {
       return strTime
     },
     bindMessage () {
+      this.$store.commit('switchLoading', true);
       this.$bind(
         'messages',
         fStore.collection('Message').orderBy('createTime')
       )
+      .then(() => {
+         this.$store.commit('switchLoading', false);
+      })
     },
     addMessage () {
-      if (this.inputMessage === '' || !this.isLogin) return
+      if (this.inputMessage === '' || !this.isAuth) return
+
+      const newMsg = {
+        'author': {
+          'uid': this.user.uid,
+          'name': this.user.displayName,
+          'photoURL': this.user.photoURL,
+          'email': this.user.email
+        },
+        'content': this.inputMessage,
+        'createTime': firebase.firestore.Timestamp.fromDate(new Date())
+      };
+  
+      // clean inout first
+      this.inputMessage = ''
 
       // Add message to firestore
       fStore.collection('Message')
-        .add({
-          'author': {
-            'uid': this.user.uid,
-            'name': this.user.displayName,
-            'photoURL': this.user.photoURL,
-            'email': this.user.email
-          },
-          'content': this.inputMessage,
-          'createTime': firebase.firestore.Timestamp.fromDate(new Date())
-        })
+        .add(newMsg)
         .then(() => {
           this.inputMessage = ''
+        })
+        .catch(() => {
+          // rollback input if message isn't sent
+          this.inputMessage = newMsg.content;
         })
     }
   }
